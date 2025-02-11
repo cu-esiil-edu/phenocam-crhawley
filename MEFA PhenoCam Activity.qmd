@@ -191,15 +191,15 @@ ggplotly(Site_map)
 Now, let's view some PhenoCam images and greenness data. Choose a site to explore, and enter the site name and relevant information in the cell below. For example, I chose the site "lacclair", which represents a deciduous broadleaf ("DB") vegetation type, and I chose to look at images from the year 2022. You'll also need to specify which region of interest (ROI) to use for your site. Recall that some sites have multiple ROIs, each with a unique ID number. You can view the possible ROIs for your site on the [PhenoCam website.](https://phenocam.nau.edu/webcam/)
 
 ```{r}
-# Choose site to explore 
+# Choose site to explore; change these later when playing around with data
 # Enter name exactly as it appears in the table/on the website
-site_name = "lacclair"
+site_name = "stanislausforage"
 
 # Indicate vegetation type (listed on site page)
-veg = "DB"
+veg = "AG"  #decidious broadleaf=DB, that's what we did before
 
 # Choose data year (for downloading images later)
-year = 2022
+year = 2024
 
 # Indicate ROI ID
 ROI = 1000
@@ -218,7 +218,7 @@ First, we'll download canopy greenness (GCC = green chromatic coordinate) timese
 GCC_timeseries <- get_pheno_ts(site = site_name, 
                                vegType = veg, 
                                roiID = ROI, 
-                               type = '3day')
+                               type = '3day')  #data is segregated by Phenocam to be either 1day or 3day
 
 # View table and available data (column names)
 View(GCC_timeseries) 
@@ -245,6 +245,23 @@ plot(GCC_timeseries$date, GCC_timeseries$gcc_90,
      # Add title
      main = paste0(site_name, ": ", "Canopy Greenness Timeseries"))
 
+#Make the same plot in ggplot
+ggplot(GCC_timeseries, aes(x = date, y = gcc_90)) +
+  geom_line(color = "darkgreen") +
+  geom_point(color = "darkgreen") +
+  labs(
+    x = "Date",
+    y = "GCC",
+    title = paste0(site_name, ": ", "Canopy Greenness Timeseries")
+  ) +
+theme_minimal()+
+  theme(
+    text = element_text(size = 20),
+    axis.title = element_text(size = 24),
+    axis.text = element_text(size = 20),
+    plot.title = element_text(size = 30)
+  )
+
 ```
 
 *Note: Since the plot isn't saved as an object, it only appears in the built-in plot viewer for R. However, you can right click on the plot to copy and paste it elsewhere. If you accidentally close a plot and want to see it again, just re-run the code cell that created it.*
@@ -260,7 +277,7 @@ download_phenocam(site = site_name,
                   veg_type = veg,
                   frequency = 3,
                   phenophase = TRUE,
-                  out_dir = dir)
+                  out_dir = dir) #save to our directory called pheno_images
 
 # Read in the transition date csv file:
 
